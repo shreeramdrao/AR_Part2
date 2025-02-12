@@ -42,7 +42,7 @@
                 xrSession = await navigator.xr.requestSession("immersive-ar", { requiredFeatures: ["local-floor"] });
                 xrSession.addEventListener("end", () => console.log("AR session ended"));
 
-                // WebGL Renderer with alpha for camera transparency
+                // WebGL Renderer with transparency
                 renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.xr.enabled = true;
