@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom WebXR AR</title>
+    <title>WebXR AR Video</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
@@ -46,6 +46,7 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.xr.enabled = true;
                 document.body.appendChild(renderer.domElement);
+                document.getElementById("startAR").style.display = "none"; // Hide button after starting AR
 
                 scene = new THREE.Scene();
 
@@ -76,6 +77,7 @@
                         model.position.set(pos.x, pos.y - 1.5, pos.z - 2); // Adjust model position
                     }
                     renderer.render(scene, camera);
+                    xrSession.requestAnimationFrame(render);
                 }
 
                 xrSession.requestAnimationFrame(render);
