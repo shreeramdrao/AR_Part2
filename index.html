@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom WebXR AR</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js"></script>
+
+    <style>
+        body { margin: 0; overflow: hidden; background: transparent; }
+        canvas { display: block; }
+        #startAR {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            font-size: 18px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+<button id="startAR">Start AR</button>
+
+<script>
+    let scene, camera, renderer, model, xrSession;
+    const startButton = document.getElementById("startAR");
+
+    startButton.addEventListener("click", async () => {
+        if (navigator.xr) {
+            try {
+                xrSession = await navigator.xr.requestSession("immersive-ar", { requiredFeatures: ["local-floor"] });
+
+                const gl = document.createElement("canvas").getContext("webgl", { xrCompatible: true });
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, context: gl });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.xr.enabled = true;
+                document.body.appendChild(renderer.domElement);
+
+                scene = new THREE.Scene();
+
+                // Add Lighting
+                const light = new THREE.DirectionalLight(0xffffff, 2);
+                light.position.set(2, 4, 2);
+                scene.add(light);
+
+                // Load 3D Model
+                const loader = new THREE.GLTFLoader();
+                loader.load("https://ar-qrcode.vercel.app/assets/food.glb", (gltf) => {
+                    model = gltf.scene;
+                    model.scale.set(0.5, 0.5, 0.5);
+                    scene.add(model);
+                });
+
+                // Setup Camera
+                const referenceSpace = await xrSession.requestReferenceSpace("local-floor");
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.set(0, 1.6, 3);
+                scene.add(camera);
+
+                // AR Loop
+                function render(timestamp, frame) {
+                    let pose = frame.getViewerPose(referenceSpace);
+                    if (pose) {
+                        const pos = pose.transform.position;
+                        model.position.set(pos.x, pos.y - 1.5, pos.z - 2); // Adjust model position
+                    }
+                    renderer.render(scene, camera);
+                }
+
+                xrSession.requestAnimationFrame(render);
+            } catch (error) {
+                alert("WebXR AR Session Failed: " + error);
+            }
+        } else {
+            alert("WebXR is not supported on this device.");
+        }
+    });
+</script>
+
+</body>
+</html>
