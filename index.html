@@ -42,18 +42,24 @@
                 xrSession = await navigator.xr.requestSession("immersive-ar", { requiredFeatures: ["local-floor"] });
                 xrSession.addEventListener("end", () => console.log("AR session ended"));
 
-                // WebGL Renderer (Alpha true ensures transparency for camera)
+                // WebGL Renderer with alpha for camera transparency
                 renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.xr.enabled = true;
                 document.body.appendChild(renderer.domElement);
+
+                // Create XR reference space
+                xrSession.requestReferenceSpace("local-floor").then((refSpace) => {
+                    xrRefSpace = refSpace;
+                    xrSession.requestAnimationFrame(render);
+                });
 
                 // Scene & Camera
                 scene = new THREE.Scene();
                 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
                 scene.add(camera);
 
-                // Add Light
+                // Lighting
                 const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
                 scene.add(light);
 
@@ -65,21 +71,17 @@
                     scene.add(model);
                 });
 
-                // Set Reference Space
-                xrRefSpace = await xrSession.requestReferenceSpace("local-floor");
-
                 function render(timestamp, frame) {
-                    const pose = frame.getViewerPose(xrRefSpace);
+                    let pose = frame.getViewerPose(xrRefSpace);
                     if (pose) {
-                        const pos = pose.transform.position;
+                        let pos = pose.transform.position;
                         model.position.set(pos.x, pos.y - 1.5, pos.z - 2);
                     }
                     renderer.render(scene, camera);
                     xrSession.requestAnimationFrame(render);
                 }
 
-                xrSession.requestAnimationFrame(render);
-                document.getElementById("startAR").style.display = "none"; // Hide button after entering AR
+                document.getElementById("startAR").style.display = "none"; // Hide button
 
             } catch (error) {
                 alert("AR Session Failed: " + error);
