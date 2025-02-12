@@ -3,46 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>8thWall WebAR</title>
+    <title>Advanced WebXR AR 3D Model</title>
+    
+    <!-- Load Three.js and WebXR Modules -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webxr-polyfill/webxr-polyfill@latest/build/webxr-polyfill.min.js"></script>
+    <script type="module">
+        import { ARButton } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/ARButton.js';
+        import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/loaders/GLTFLoader.js';
 
-    <script src="https://cdn.8thwall.com/web/8frame/8frame.js"></script>
+        let scene, camera, renderer, model, controller;
 
-    <style>
-        body { margin: 0; overflow: hidden; }
-        #startAR {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            font-size: 18px;
-            background: #007AFF;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            z-index: 100;
+        function init() {
+            // Create Scene
+            scene = new THREE.Scene();
+
+            // Set up Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+            scene.add(camera);
+
+            // WebGL Renderer
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.xr.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            // AR Button
+            document.body.appendChild(ARButton.createButton(renderer));
+
+            // Light
+            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+            scene.add(light);
+
+            // Load 3D Model
+            const loader = new GLTFLoader();
+            loader.load('https://ar-part2.vercel.app/assets/food.glb', function (gltf) {
+                model = gltf.scene;
+                model.position.set(0, 0, -1); // Initial Placement
+                model.scale.set(0.5, 0.5, 0.5); // Adjust Size
+                scene.add(model);
+            });
+
+            // AR Session Handling
+            renderer.xr.addEventListener('sessionstart', () => {
+                console.log("AR Session Started");
+            });
+
+            // Controller for movement
+            controller = renderer.xr.getController(0);
+            controller.addEventListener('selectstart', () => moveForward());
+            scene.add(controller);
+
+            animate();
         }
-    </style>
-</head>
-<body>
 
-    <button id="startAR">Start AR</button>
+        function moveForward() {
+            if (model) {
+                model.position.z += 0.1; // Move forward
+            }
+        }
 
-    <a-scene embedded arjs vr-mode-ui="enabled: false">
-        <a-light type="directional" intensity="0.8" position="1 1 1"></a-light>
-        <a-camera position="0 1.6 0"></a-camera>
-        <a-entity id="ar-model" position="0 0 -3">
-            <a-gltf-model src="https://ar-part2.vercel.app/assets/food.glb"></a-gltf-model>
-        </a-entity>
-    </a-scene>
+        function animate() {
+            renderer.setAnimationLoop(() => {
+                renderer.render(scene, camera);
+            });
+        }
 
-    <script>
-        document.getElementById("startAR").addEventListener("click", () => {
-            document.querySelector("a-scene").setAttribute("arjs", "sourceType: webcam; debugUIEnabled: false;");
-            document.getElementById("startAR").style.display = "none";
-        });
+        init();
     </script>
-
-</body>
+</head>
+<body></body>
 </html>
