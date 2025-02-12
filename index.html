@@ -37,7 +37,7 @@
     let loader = new THREE.GLTFLoader();
 
     document.getElementById("startAR").addEventListener("click", async () => {
-        if (navigator.xr) {
+        if (navigator.xr && await navigator.xr.isSessionSupported("immersive-ar")) {
             try {
                 xrSession = await navigator.xr.requestSession("immersive-ar", { requiredFeatures: ["local-floor"] });
                 xrSession.addEventListener("end", () => console.log("AR session ended"));
@@ -87,7 +87,7 @@
                 alert("AR Session Failed: " + error);
             }
         } else {
-            alert("WebXR not supported.");
+            alert("WebXR not supported on this device or browser.");
         }
     });
 </script>
