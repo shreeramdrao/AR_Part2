@@ -7,7 +7,7 @@
 
     <!-- Load Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Load GLTFLoader separately -->
+    <!-- Load GLTFLoader -->
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
 
     <style>
@@ -34,7 +34,7 @@
 
 <script>
     let scene, camera, renderer, model, xrSession, xrRefSpace;
-    let loader = new THREE.GLTFLoader(); // Properly define the loader
+    let loader = new THREE.GLTFLoader();
 
     document.getElementById("startAR").addEventListener("click", async () => {
         if (navigator.xr) {
@@ -42,22 +42,22 @@
                 xrSession = await navigator.xr.requestSession("immersive-ar", { requiredFeatures: ["local-floor"] });
                 xrSession.addEventListener("end", () => console.log("AR session ended"));
 
-                // WebGL Renderer
+                // WebGL Renderer (Alpha true ensures transparency for camera)
                 renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.xr.enabled = true;
                 document.body.appendChild(renderer.domElement);
 
-                // Setup Scene & Camera
+                // Scene & Camera
                 scene = new THREE.Scene();
                 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
                 scene.add(camera);
 
-                // Lighting
+                // Add Light
                 const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
                 scene.add(light);
 
-                // Load Model
+                // Load 3D Model
                 loader.load("https://ar-part2.vercel.app/assets/food.glb", function (gltf) {
                     model = gltf.scene;
                     model.scale.set(1, 1, 1);
