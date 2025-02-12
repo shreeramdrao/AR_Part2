@@ -11,11 +11,16 @@
     <!-- Load WebXR Polyfill (Ensures Compatibility) -->
     <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill/build/webxr-polyfill.min.js"></script>
 
-    <!-- Load GLTFLoader for 3D Models -->
-    <script type="module">
-        import { ARButton } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/ARButton.js';
-        import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/loaders/GLTFLoader.js';
+    <!-- Load ARButton and GLTFLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/ARButton.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/jsm/loaders/GLTFLoader.js"></script>
 
+    <style>
+        body { margin: 0; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <script>
         let scene, camera, renderer, model, controller;
 
         function init() {
@@ -36,14 +41,14 @@
             document.body.appendChild(renderer.domElement);
 
             // AR Button
-            document.body.appendChild(ARButton.createButton(renderer));
+            document.body.appendChild(THREE.ARButton.createButton(renderer));
 
             // Lighting
             const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
             scene.add(light);
 
             // Load 3D Model
-            const loader = new GLTFLoader();
+            const loader = new THREE.GLTFLoader();
             loader.load('https://ar-part2.vercel.app/assets/food.glb', function (gltf) {
                 model = gltf.scene;
                 model.position.set(0, 0, -1); // Place in front
@@ -73,6 +78,5 @@
 
         init();
     </script>
-</head>
-<body style="margin: 0; overflow: hidden;"></body>
+</body>
 </html>
