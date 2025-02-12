@@ -3,32 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebXR AR 3D Model</title>
-    
+    <title>WebXR AR Experience</title>
+
     <!-- Load Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <!-- Load WebXR Polyfill for Compatibility -->
-    <script src="https://cdn.jsdelivr.net/npm/@webxr-polyfill/webxr-polyfill.min.js"></script>
+    <!-- Load WebXR Polyfill (Ensures Compatibility) -->
+    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill/build/webxr-polyfill.min.js"></script>
 
-    <!-- Load ARButton and GLTFLoader -->
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/ARButton.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/jsm/loaders/GLTFLoader.js"></script>
+    <!-- Load GLTFLoader for 3D Models -->
+    <script type="module">
+        import { ARButton } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/ARButton.js';
+        import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/loaders/GLTFLoader.js';
 
-    <style>
-        body { margin: 0; overflow: hidden; }
-    </style>
-</head>
-<body>
-    <script>
         let scene, camera, renderer, model, controller;
 
         function init() {
+            // WebXR Polyfill (Fix Compatibility Issues)
+            const polyfill = new WebXRPolyfill();
+
             // Create Scene
             scene = new THREE.Scene();
 
             // Set up Camera
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 20);
             scene.add(camera);
 
             // WebGL Renderer
@@ -38,14 +36,14 @@
             document.body.appendChild(renderer.domElement);
 
             // AR Button
-            document.body.appendChild(THREE.ARButton.createButton(renderer));
+            document.body.appendChild(ARButton.createButton(renderer));
 
             // Lighting
             const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
             scene.add(light);
 
             // Load 3D Model
-            const loader = new THREE.GLTFLoader();
+            const loader = new GLTFLoader();
             loader.load('https://ar-part2.vercel.app/assets/food.glb', function (gltf) {
                 model = gltf.scene;
                 model.position.set(0, 0, -1); // Place in front
@@ -75,5 +73,6 @@
 
         init();
     </script>
-</body>
+</head>
+<body style="margin: 0; overflow: hidden;"></body>
 </html>
