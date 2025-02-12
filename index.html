@@ -6,8 +6,6 @@
     <title>Custom WebXR AR</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js"></script>
 
     <style>
         body { margin: 0; overflow: hidden; background: transparent; }
@@ -32,7 +30,9 @@
 
 <button id="startAR">Start AR</button>
 
-<script>
+<script type="module">
+    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js";
+
     let scene, camera, renderer, model, xrSession;
     const startButton = document.getElementById("startAR");
 
@@ -55,7 +55,7 @@
                 scene.add(light);
 
                 // Load 3D Model
-                const loader = new THREE.GLTFLoader();
+                const loader = new GLTFLoader();
                 loader.load("https://ar-part2.vercel.app/assets/food.glb", (gltf) => {
                     model = gltf.scene;
                     model.scale.set(0.5, 0.5, 0.5);
