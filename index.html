@@ -4,29 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebXR AR Experience</title>
-
-    <!-- Load Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-    <!-- Load WebXR Polyfill (Ensures Compatibility) -->
-    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill/build/webxr-polyfill.min.js"></script>
-
-    <!-- Load ARButton and GLTFLoader -->
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/ARButton.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/jsm/loaders/GLTFLoader.js"></script>
-
     <style>
         body { margin: 0; overflow: hidden; }
     </style>
 </head>
 <body>
-    <script>
+    <script type="module">
+        import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.module.js";
+        import { ARButton } from "https://cdn.jsdelivr.net/npm/three@0.145.0/examples/jsm/webxr/ARButton.js";
+        import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.145.0/examples/jsm/loaders/GLTFLoader.js";
+
         let scene, camera, renderer, model, controller;
 
         function init() {
-            // WebXR Polyfill (Fix Compatibility Issues)
-            const polyfill = new WebXRPolyfill();
-
             // Create Scene
             scene = new THREE.Scene();
 
@@ -41,14 +31,14 @@
             document.body.appendChild(renderer.domElement);
 
             // AR Button
-            document.body.appendChild(THREE.ARButton.createButton(renderer));
+            document.body.appendChild(ARButton.createButton(renderer));
 
             // Lighting
             const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
             scene.add(light);
 
             // Load 3D Model
-            const loader = new THREE.GLTFLoader();
+            const loader = new GLTFLoader();
             loader.load('https://ar-part2.vercel.app/assets/food.glb', function (gltf) {
                 model = gltf.scene;
                 model.position.set(0, 0, -1); // Place in front
